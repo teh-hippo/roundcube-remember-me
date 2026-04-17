@@ -1,0 +1,21 @@
+<?php
+
+// Default configuration for the Roundcube Remember Me plugin.
+// Copy to config.inc.php and adjust as needed.
+
+// Enable the "Remember Me" checkbox on the login form.
+// When checked, a persistent cookie is stored so the user is automatically
+// logged in on subsequent visits.
+$config['remember_me_enabled'] = true;
+
+// How long the "Remember Me" cookie lasts (seconds). Default: 30 days.
+$config['remember_me_lifetime'] = 2592000;
+
+// Optional auto-login. When enabled with remember_me_autologin_user / _pass
+// set, every anonymous request is converted to a synthetic login POST so
+// the user never sees the Roundcube login form. Disabled by default.
+// Intended for single-tenant deployments gated by an outer auth layer
+// (e.g. Home Assistant Ingress, reverse proxy SSO).
+$config['remember_me_autologin'] = false;
+// $config['remember_me_autologin_user'] = '';
+// $config['remember_me_autologin_pass'] = '';
