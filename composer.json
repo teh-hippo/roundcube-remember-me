@@ -1,0 +1,10 @@
+{
+    "name": "teh-hippo/roundcube-remember-me",
+    "type": "roundcube-plugin",
+    "description": "Roundcube plugin that adds a Remember Me checkbox to the login form for persistent sessions",
+    "license": "MIT",
+    "homepage": "https://github.com/teh-hippo/roundcube-remember-me",
+    "require": {
+        "roundcube/plugin-installer": ">=0.1.3"
+    }
+}
