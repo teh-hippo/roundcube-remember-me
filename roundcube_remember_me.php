@@ -54,6 +54,7 @@ class roundcube_remember_me extends rcube_plugin
 
         // On logout, clear the cookie and stored token.
         $this->add_hook('logout_after', [$this, 'on_logout_after']);
+        $this->add_hook('session_destroy', [$this, 'on_logout_after']);
     }
 
     // =========================================================================
