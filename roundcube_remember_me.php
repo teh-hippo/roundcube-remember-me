@@ -76,7 +76,9 @@ class roundcube_remember_me extends rcube_plugin
         }
 
         // 1. Try operator-provisioned autologin.
-        if ($this->rc->config->get('remember_me_autologin')) {
+        // Skip if the user just explicitly logged out (suppression cookie).
+        if ($this->rc->config->get('remember_me_autologin')
+            && empty($_COOKIE['rc_remember_me_suppress'])) {
             $user = $this->rc->config->get('remember_me_autologin_user');
             $pass = $this->rc->config->get('remember_me_autologin_pass');
             if ($user && $pass) {
@@ -206,6 +208,8 @@ class roundcube_remember_me extends rcube_plugin
 
     /**
      * On logout, remove the remember-me cookie and delete the stored token.
+     * Sets a short-lived suppression cookie to prevent autologin from
+     * immediately re-logging the user in on the post-logout redirect.
      */
     public function on_logout_after($args)
     {
@@ -215,6 +219,17 @@ class roundcube_remember_me extends rcube_plugin
             $this->token_delete($token_hash);
         }
         $this->clear_cookie();
+
+        // Suppress autologin for 10 seconds so the logout redirect lands on
+        // the login form instead of being immediately re-authenticated.
+        $path = $this->rc->config->get('request_path', '/');
+        setcookie('rc_remember_me_suppress', '1', [
+            'expires'  => time() + 10,
+            'path'     => $path,
+            'secure'   => true,
+            'httponly'  => true,
+            'samesite' => 'Lax',
+        ]);
 
         // Purge expired tokens while we're at it.
         $this->token_purge_expired();

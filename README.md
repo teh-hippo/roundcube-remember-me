@@ -42,6 +42,18 @@ $config['remember_me_autologin_user'] = 'user@example.com';
 $config['remember_me_autologin_pass'] = '...';
 ```
 
+## Security
+
+- Only a SHA-256 hash of the auth token is stored server-side.
+- The IMAP password is encrypted with Roundcube's `des_key`. Anyone with
+  database access **and** the `des_key` can recover stored credentials.
+  In the Home Assistant add-on deployment this is acceptable because the
+  database is behind HA's own auth layer.
+- Tokens are single-use (rotated on each auto-login).
+- On logout, the cookie and stored token are both cleared.
+- Autologin mode includes logout suppression to prevent immediate
+  re-authentication after explicit logout.
+
 ## Requirements
 
 - Roundcube 1.6+
