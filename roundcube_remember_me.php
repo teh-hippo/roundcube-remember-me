@@ -39,6 +39,9 @@ class roundcube_remember_me extends rcube_plugin
         $this->load_config();
         $this->add_texts('localization/', true);
 
+        $task = $this->rc->task ?? 'unknown';
+        rcube::console("remember_me: init() called, task={$task}");
+
         // Auto-login: either from config (operator-provisioned) or from
         // a stored remember-me token. Runs on every request.
         $this->add_hook('startup', [$this, 'on_startup']);
