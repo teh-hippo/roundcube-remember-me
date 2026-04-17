@@ -105,10 +105,12 @@ class roundcube_remember_me extends rcube_plugin
             return $args;
         }
 
+        rcube::console("remember_me: found cookie, attempting token login");
         $token_hash = hash('sha256', $cookie_token);
         $row = $this->token_lookup($token_hash);
 
         if (!$row) {
+            rcube::console("remember_me: token not found in DB, clearing cookie");
             $this->clear_cookie();
             return $args;
         }
@@ -131,6 +133,7 @@ class roundcube_remember_me extends rcube_plugin
 
         $host = $row['host'];
         $user = $row['username'];
+        rcube::console("remember_me: auto-login user={$user} host={$host}");
 
         if ($this->do_login($user, $password, $host)) {
             // Rotate the token (single-use).
@@ -198,7 +201,11 @@ class roundcube_remember_me extends rcube_plugin
             $pass = rcube_utils::get_input_string('_pass', rcube_utils::INPUT_POST);
         }
 
-        $host = $args['host'] ?? $_SESSION['storage_host'] ?? $this->resolve_imap_host();
+        // Always use the configured IMAP host (full URL with ssl:// prefix
+        // and port). The hook's $args['host'] and $_SESSION['storage_host']
+        // contain the bare hostname after Roundcube strips the prefix/port
+        // during connection, which rcmail::login() cannot use.
+        $host = $this->resolve_imap_host();
 
         if (!$user || !$pass) {
             return $args;
