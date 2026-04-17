@@ -69,6 +69,8 @@ class roundcube_remember_me extends rcube_plugin
             return $args;
         }
 
+        rcube::console("remember_me: startup hook, no session, task={$args['task']}");
+
         // Let the user submit the form themselves if they are mid-login.
         if ($args['task'] === 'login' && $args['action'] === 'login'
             && $_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['_user'])) {
@@ -213,12 +215,15 @@ class roundcube_remember_me extends rcube_plugin
      */
     public function on_logout_after($args)
     {
+        rcube::console("remember_me: logout_after hook fired");
         $cookie_token = $_COOKIE['rc_remember_me'] ?? null;
         if ($cookie_token) {
             $token_hash = hash('sha256', $cookie_token);
             $this->token_delete($token_hash);
+            rcube::console("remember_me: deleted token from DB");
         }
         $this->clear_cookie();
+        rcube::console("remember_me: cleared cookie");
 
         // Suppress autologin for 10 seconds so the logout redirect lands on
         // the login form instead of being immediately re-authenticated.
